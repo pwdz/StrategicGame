@@ -7,9 +7,9 @@
 #define GRN "\x1B[32m"
 #define YEL "\x1B[33m"
 #define BLU "\x1B[34m"
-#define MAG "\x1B[35m"
 #define CYN "\x1B[36m"
 #define WHT "\x1B[32m"
+#define PUR "\x1B[35m"
 #define RESET "\x1B[0m"
 FILE *fb;
 typedef struct{//for the contents in c[i].txt files. Questions & Chioces
@@ -56,31 +56,23 @@ void start_new_game(char check ,node *list, game *g,int *tedad_tasmim);
 void resume_game(char check ,node *list, game *g,int *tedad_tasmim);
 int compare(const void *i1,const void *i2);
 void show_scoreboard(game *g);
-
+void delete_save(game *g,int arg);
+void make_question();
 int main()
 {
     char name[200];
     game g;
-
-    //FILE *players=fopen("Project-Files/players.txt","a+");
-    //retrieval(name);
-    
     node *list;//this node is fake!(first node)
     list=(node *)malloc(sizeof(node));
     list->next=NULL;
     list->perv=NULL;
-
-    //int tedad_tasmim=read_files(list);
     int tedad_tasmim,chance=0;
-    
     intro(name,list,&g,&tedad_tasmim); //name is the name of player
     cal_chance(list,&chance);
-
     strcpy(g.player_name,name);
     g.tedad_tasmim=tedad_tasmim;
     //print_list(list);
     srand(time(NULL));
-
     //main loop of the game:(if 4 conditions are correct, player hasn't lost yet)
     while(g.people>0 && g.court>0 && g.treasury>0 && (double)(g.people+g.court+g.treasury)/3>=10)
     {
@@ -106,93 +98,25 @@ int intro(char *name,node *list,game *g,int *tedad_tasmim)//returns tedad_tasmim
     strcpy(g->player_name , name);
     printf(YEL"[###]"RESET"Welcome "GRN"%s"RESET", select one of these options:\n\n",name);
     fb = fopen("Project-Files/bin.bin","r+b");
-    char check;
-    check = retrieval(g,name);
-    menu(check,list,g,tedad_tasmim,2);
-    /*puts(RED"[1]"RESET"Start a new game");
-    puts(RED"[2]"RESET"Resume a game");
-    printf("> ");
-    scanf("\n%[^\n]s",reshte);
-    while(strlen(reshte)!=1 || (reshte[0]!='1' && reshte[0]!='2'))
-    {
-         puts(RED"[!] Invalid"RESET" input. Please enter again:");
-         printf("> ");
-         scanf("\n %[^\n]s",reshte);
-      
-    }
-    switch(reshte[0])
-    {
-        case '1':
-            //scanf("%c",&c);
-            read_choices(list,tedad_tasmim);
-            if(check=='y')
-                fseek(fb,-1*sizeof(*g),SEEK_CUR);
-            g->people=50;
-            g->court = 50;
-            g->treasury = 50;
-            g->state='R';
-            break;
-        case '2':
-            //scanf("%c",&c);
-            if(check=='y')
-            {
-                fseek(fb,-1*sizeof(*g),SEEK_CUR);
-                if(g->state == 'R')
-                {
-                    puts(YEL"[###]"RESET"Your perivious data "GRN"is retrieved! "RESET YEL"^-^"RESET);
-                    retrieve_problems(*g,list);
-                    *tedad_tasmim=g->tedad_tasmim;
-                }
-                else 
-                {
-                    puts(YEL"[###]"RESET"You "RED"had lost"RESET" the perivious game!"YEL":((("RESET);
-                    read_choices(list,tedad_tasmim);
-                    g->people = 50;
-                    g->court = 50;
-                    g->treasury = 50;
-                    g->state='R';
-                }
-            }
-            if(check == 'n')
-            {
-                puts(YEL"[###]"RESET"You "RED"don't have"RESET" any saved game!"YEL"-_-"RESET);
-                read_choices(list,tedad_tasmim);
-                g->people = 50;
-                g->court = 50;
-                g->treasury = 50;
-                g->state='R';
-            }
-            break;
-    }*/
-    start();
+    menu(retrieval(g,name) , list , g , tedad_tasmim , 2);
 }
 void start()
 {
-    puts(WHT"................................................................................."RESET);
-    puts(WHT"................................................................................."RESET);
-    puts(WHT".........."RESET "*****" WHT"....."RESET"***********"WHT"......"RESET"***"WHT"........."RESET"******"WHT"......"RESET"***********"WHT"........."RESET);
-    puts(WHT"........."RESET"***"WHT".."RESET"***"WHT"..."RESET"***********"WHT"....."RESET"*****"WHT"......."RESET"***"WHT"..."RESET"***"WHT"...."RESET"***********"WHT"........."RESET);
-    puts(WHT"........."RESET"***"WHT"............"RESET"***"WHT"........"RESET"***"WHT"."RESET"***"WHT"......"RESET"**"WHT"...."RESET"***"WHT"........"RESET"***"WHT"............."RESET);
-    puts(WHT".........."RESET"***"WHT"..........."RESET"***"WHT"......."RESET"***"WHT"..."RESET"***"WHT"....."RESET"**"WHT"..."RESET"***"WHT"........."RESET"***"WHT"............."RESET);
-    puts(WHT"..........."RESET"***"WHT".........."RESET"***"WHT"......"RESET"***"WHT"....."RESET"***"WHT"...."RESET"**"WHT".."RESET"**"WHT"..........."RESET"***"WHT"............."RESET);
-    puts(WHT"............"RESET"***"WHT"........."RESET"***"WHT"....."RESET"***"WHT"......."RESET"***"WHT"..."RESET"*****"WHT"............"RESET"***"WHT"............."RESET);
-    puts(WHT"............."RESET"***"WHT"........"RESET"***"WHT"...."RESET"***"WHT"........."RESET"***"WHT".."RESET"**"WHT"."RESET"***"WHT"..........."RESET"***"WHT"............."RESET);
-    puts(WHT".............."RESET"***"WHT"......."RESET"***"WHT"...."RESET"***************"WHT".."RESET"**"WHT".."RESET"***"WHT".........."RESET"***"WHT"............."RESET);
-    puts(WHT"..............."RESET"***"WHT"......"RESET"***"WHT"...."RESET"***************"WHT".."RESET"**"WHT"..."RESET"***"WHT"........."RESET"***"WHT"............."RESET);
-    puts(WHT".........."RESET"***"WHT".."RESET"***"WHT"......"RESET"***"WHT"...."RESET"**"WHT"..........."RESET"**"WHT".."RESET"**"WHT"...."RESET"***"WHT"........"RESET"***"WHT"............."RESET);
-    puts(WHT"............"RESET"****"WHT"........"RESET"***"WHT"...."RESET"**"WHT"..........."RESET"**"WHT".."RESET"**"WHT"....."RESET"***"WHT"......."RESET"***"WHT"............."RESET);
-    puts(WHT"................................................................................."RESET);
-    puts(WHT"................................................................................."RESET);
-    puts(WHT"................      "RESET CYN"For saving game enter ->'s'<-     "RESET WHT"   ......................"RESET);
-    puts(WHT"................     "RESET CYN" For exiting game enter ->'e'<-     "RESET WHT"  ......................"RESET);
-    puts(WHT"................................................................................."RESET);
+    FILE *start=fopen("Project-Files/start.txt","r");
+    char line[200];
+    while(fscanf(start,"\n%[^\n]s",line)!=EOF)
+    {
+        for(int i=0;i<strlen(line);i++)
+            if(line[i]=='.')    printf(GRN"."RESET);
+            else if(line[i]=='*')    printf("*");
+            else printf(CYN"%c"RESET,line[i]);
+        printf("\n");
+    }
 }
 void cal_chance(node *list,int *chance)
 {
     for(node *current = list->next ; current!=NULL ; current=current->next)
-    {
         *chance+=current->data.tedad;
-    }
 }
 void read_choices(node *list,int *tedad_tasmim)//returns tedad tasmim
 {
@@ -200,25 +124,18 @@ void read_choices(node *list,int *tedad_tasmim)//returns tedad tasmim
     FILE *fp=fopen("Project-Files/CHOICES.txt","r"),*q;
     if(fp==NULL)
     {
-        puts("cannout open choices.txt");
+        puts("cannot open choices.txt");
         exit(-1);
     }
-    //NOTIIIIIICEEEEEEEEEEE!!!!!!
-    char file_name[40],f[40],garbage[200];
+    char file_name[40],f[40];
     node *current=list;
     file_data data;
-    while(fgets(f,40,fp)!=NULL)
+    while(fscanf(fp,"%s",f)!=EOF)
     {
-        if(f[strlen(f)-1]=='\n')
-            f[strlen(f)-2]=0;
         strcpy(file_name,"Project-Files/");
         strcat(file_name,f);
-
         read_problems(file_name,&data,3);
-        
         current = make_list(current,data);
-        //add_end(current,creat_node(data));
-        //current=current->next;
         (*tedad_tasmim)++;
     }   
     fclose(fp);
@@ -231,19 +148,17 @@ node * make_list(node *current,file_data data)
 void read_problems(char *file_name,file_data *data,int tedad)
 {
     FILE *q;
-    char garbage[200];
     q=fopen(file_name,"r");//q is the file handler
     if(q==NULL)
     {
-        puts("Cannot open c.txt");
+        printf("Couldn't open the file:%s\n",file_name);
         return;
     }
     fgets(data->info,200,q);
     for(int i=0;i<2;i++)
     {
-        fgets(data->C[i],200,q);
+        fscanf(q,"\n%[^\n]s",data->C[i]);
         fscanf(q,"%d%d%d",&data->eOp[i],&data->eOc[i],&data->eOt[i]);
-        fgets(garbage,200,q);
     }
     data->tedad=tedad;
     strcpy(data->f_n,file_name);
@@ -276,35 +191,34 @@ void delete_node(node *current)
 {
     current->perv->next=current->next;
     free(current);
-    //puts("the node is deleted successfully!");
 }
 void print_list(node *list)
 {
     for(node *current=list->next;current!=NULL;current=current->next)
     {
         puts("############################################################");
-        printf("info:%s\n,adrress:%s\n",current->data.info,current->data.f_n);
-        printf("C1:%s\nEffect on:\npeople:%d\ncourt:%d\nTreasury:%d\n",current->data.C[1],current->data.eOp[1],current->data.eOc[1],current->data.eOt[1]);       
+        printf("info:%s\n",current->data.info);
+        printf("C1:%s\nEffect on:\npeople:%d\ncourt:%d\nTreasury:%d\n",current->data.C[0],current->data.eOp[0],current->data.eOc[0],current->data.eOt[0]);       
+printf("C2:%s\nEffect on:\npeople:%d\ncourt:%d\nTreasury:%d\n",current->data.C[1],current->data.eOp[1],current->data.eOc[1],current->data.eOt[1]);       
         puts("############################################################");
     }
 }
 void print_node(node *current)
 {
-    printf(YEL"[info] "RESET);
-    printf("%s\n"GRN"[1]:"RESET" %s",current->data.info,current->data.C[0]);
+    printf(YEL"[info]"RESET"%s\n"GRN"[1]:"RESET" %s\n",current->data.info,current->data.C[0]);
     printf(GRN"[2]:"RESET" %s\n",current->data.C[1]);       
 }
 char retrieval(game *g,char *name)
 {
     while(fread(g,sizeof(*g),1,fb)==1)
     { 
-        printf("SAVED:PLAYER NAME->:%s\n",g->player_name);
-        printf("name:%s\n",name);
         if( strcmp(g->player_name , name) == 0 )
         {
+            fseek(fb,-1*sizeof(*g),SEEK_CUR);
             return 'y';
         }
     }
+    strcpy(g->player_name,name);
     return 'n';
 }
 void retrieve_problems(game g,node *list)
@@ -314,11 +228,8 @@ void retrieve_problems(game g,node *list)
     for(int i=0;i<g.tedad_tasmim;i++)
     {
         read_problems(g.f_n[i],&data,(int)g.probability[i]);
-        //printf("info: %s\n",data.info);
         current=make_list(current,data);
-        //print_node(current);
     }
-    //print_list(list);
 }
 game show_question_ask(int *chance,node *list,game g)//returns struct game.after calculation on it.
 {
@@ -352,14 +263,12 @@ game show_question_ask(int *chance,node *list,game g)//returns struct game.after
 game calculate(char *key,game g,node *current,node *list)//I took list only for my save function.
 {                                                     //CURRENT is for applying effects on 3vars.
     char save_str[100];//for asking "Do you wanna save the game " containing '1' or '2'
-    //fflush(stdin);
     int fake;
     if(strlen(key)!=1)
         key[0]='a';
     switch(key[0])
     {
         case '1':
-            //scanf("%c",&c);//eating \n!
             g.people+=current->data.eOp[0];
             g.court+=current->data.eOc[0];
             g.treasury+=current->data.eOt[0];
@@ -368,10 +277,8 @@ game calculate(char *key,game g,node *current,node *list)//I took list only for 
             g.people+=current->data.eOp[1];
             g.court+=current->data.eOc[1];
             g.treasury+=current->data.eOt[1];
-            //scanf("%c",&c);//eating \n!
             break;
         case 'e':
-            //scanf("%c",&c);//eating \n!
             puts(YEL"[###]"RESET"Do you want to save the game?");
             puts(RED"[1]"RESET"Yes\n"RED"[2]"RESET"No");
             printf("> ");
@@ -418,8 +325,7 @@ void save(game g,node *list)
 }
 void print_values(game g)//task bar!!! showing parameters.
 {
-    int p,c,t;
-    int i=0,j;
+    int p,c,t,i=0,j;
     p=g.people/5;
     c=g.court/5;
     t=g.treasury/5;
@@ -460,6 +366,7 @@ void print_values(game g)//task bar!!! showing parameters.
 }
 void menu(char check,node *list,game *g,int *tedad_tasmim,int arg)
 {
+    puts(RED"####################################################"RESET);
     char reshte[100];
     show(arg);
     scanf("\n%[^\n]s",reshte);
@@ -471,6 +378,8 @@ void menu(char check,node *list,game *g,int *tedad_tasmim,int arg)
     }
     if( (reshte[0]=='1' || reshte[0]=='2') && arg!=2)
         reshte[0]='a';
+    if(reshte[0]=='1' || reshte[0]=='2')
+        puts(RED"####################################################"RESET);
     switch(reshte[0])
     {
         case '1':
@@ -482,21 +391,40 @@ void menu(char check,node *list,game *g,int *tedad_tasmim,int arg)
             start();
             break;
         case '3':
+            delete_save(g,arg);
             break;
         case '4':
             show_scoreboard(g);
             break;
         case '5':
+            make_question();
+            break;
+        case '6':
             break;
         case 'e':
+            if(arg!=2)
+                calculate("e",*g,list,list);
+            else 
+            {
+                puts(RED"####################################################"RESET);
+                exit(0);
+            }
             break;
         case 's':
+            if(arg!=2)
+                calculate("s",*g,list,list);
+            else
+                puts(RED"[!]"RESET"You haven't start the game yet!");
+            menu(check,list,g,tedad_tasmim,arg);
             break;
         default:
             puts(RED"[!] Invalid"RESET" input. Please enter again:");
             menu(check,list,g,tedad_tasmim,0);
             break;
     }
+    if(reshte[0]=='3' ||reshte[0]=='4' ||reshte[0]=='5' || reshte[0]=='e' || reshte[0]=='s')
+        puts(RED"####################################################"RESET);
+    if(arg==2 && (reshte[0]!='1'&&reshte[0]!='2'))  menu(check,list,g,tedad_tasmim,2);
 }
 void show(int arg)
 {
@@ -510,14 +438,13 @@ void show(int arg)
         puts(RED"[3]"RESET"Delete your previous save");
         puts(RED"[4]"RESET"Show scoreboard (first 10)");
         puts(RED"[5]"RESET"Make a new problem! ;>");
+        if(arg==1) puts(RED"[6]"RESET"Resume the game");
     }
     printf("> ");
 }
 void start_new_game(char check , node *list,game *g,int *tedad_tasmim)
 {
     read_choices(list,tedad_tasmim);
-    if(check=='y')
-         fseek(fb,-1*sizeof(*g),SEEK_CUR);
     g->people=50;
     g->court = 50;
     g->treasury = 50;
@@ -525,9 +452,16 @@ void start_new_game(char check , node *list,game *g,int *tedad_tasmim)
 }
 void resume_game(char check ,node *list, game *g,int *tedad_tasmim)
 {
+    if((check=='y' && g->state=='L') || check=='n')
+    {
+        read_choices(list,tedad_tasmim);
+        g->people = 50;
+        g->court = 50;
+        g->treasury = 50;
+        g->state='R';
+    }
     if(check=='y')
     {
-        fseek(fb,-1*sizeof(*g),SEEK_CUR);
         if(g->state == 'R')
         {
              puts(YEL"[###]"RESET"Your perivious data "GRN"is retrieved! "RESET YEL"^-^"RESET);
@@ -535,24 +469,10 @@ void resume_game(char check ,node *list, game *g,int *tedad_tasmim)
              *tedad_tasmim=g->tedad_tasmim;
         }
         else 
-        {
              puts(YEL"[###]"RESET"You "RED"had lost"RESET" the perivious game!"YEL":((("RESET);
-             read_choices(list,tedad_tasmim);
-             g->people = 50;
-             g->court = 50;
-             g->treasury = 50;
-             g->state='R';
-        }
     }
     if(check == 'n')
-    {
          puts(YEL"[###]"RESET"You "RED"don't have"RESET" any saved game!"YEL"-_-"RESET);
-         read_choices(list,tedad_tasmim);
-         g->people = 50;
-         g->court = 50;
-         g->treasury = 50;
-         g->state='R';
-    }
 }
 int compare(const void *i1,const void *i2)
 {
@@ -566,7 +486,7 @@ void show_scoreboard(game *g)
 {
     game *gg,waste;
     gg = (game *) malloc(sizeof(game));
-    int t=0;
+    int t=0,j=0;
     rewind(fb);
     while(fread(&gg[t],sizeof(gg[t]),1,fb)==1)
     {
@@ -574,16 +494,90 @@ void show_scoreboard(game *g)
         gg = (game *)realloc(gg, (t+1)*sizeof(game) );
     }
     qsort(gg,t,sizeof(game),compare);
+    puts(PUR"+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n"RESET YEL"[#]"RESET CYN"TOP 10:"RESET);
     for(int i=0;i<10&&i<t;i++)
-        printf("%d)name:%s people:%d court:%d treasury:%d\n",i+1,gg[i].player_name,gg[i].people,gg[i].court,gg[i].treasury);
+        if((i<9&&i<t-1)?strcmp(gg[i].player_name,gg[i+1].player_name)!=0:1)
+            printf(BLU"[%d]"RESET"%s"RESET YEL" [people]:"RESET "%d "YEL"[court]:"RESET"%d "YEL"[treasury]:"RESET"%d\n",i+1-j,gg[i].player_name,gg[i].people,gg[i].court,gg[i].treasury);
+        else j++;
+    puts(PUR"+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"RESET);
     free(gg);
     rewind(fb);
     while(fread(&waste,sizeof(waste),1,fb)==1)
     {
-        if(waste.player_name==g->player_name)
+        if(strcmp(waste.player_name,g->player_name)==0)
         {
             fseek(fb,-1*sizeof(game),SEEK_CUR);
             break;
         }
     }
 } 
+void delete_save(game *g,int arg)
+{
+    game *gg;
+    gg = (game *)malloc(sizeof(game));
+    int t=0,flag=0;
+    rewind(fb);
+    while(fread(&gg[t],sizeof(game),1,fb)==1)
+    {
+        if( strcmp(gg[t].player_name,g->player_name ) != 0 )
+        {
+            t++;
+            gg = (game *)realloc(gg,(t+1)*sizeof(game));
+        }
+        else flag=1;
+    }
+    if(!flag)
+    {
+        puts(RED"[!]"RESET"You don't have any previous save!");
+        free(gg);
+        return ;
+    }
+    fclose(fb); 
+    fb=fopen("Project-Files/bin.bin","wb");
+    fwrite(gg,sizeof(game),t,fb);
+    fclose(fb); 
+    fb=fopen("Project-Files/bin.bin","a+b");
+    free(gg);
+    puts(GRN"[**]"RESET"Your previous data is removed!");
+}
+void make_question()
+{
+    puts(BLU"####################################################"RESET);
+    char line[400],str[5],new_file_name[100];
+    FILE *fq,*f_choices=fopen("Project-Files/CHOICES.txt","r+");
+    int i=0;
+    while(fgets(line,20,f_choices)!=NULL)
+        i++; 
+    strcpy(new_file_name,"c");
+    sprintf(str,"%d",i+1);
+    strcat(new_file_name,str);
+    strcat(new_file_name,".txt");
+    fputs(new_file_name,f_choices);
+    fputs("\n",f_choices);
+    fclose(f_choices);
+    char adrress[100];  strcpy(adrress,"Project-Files/");
+    strcat(adrress,new_file_name);
+    fq=fopen(adrress,"a");
+    puts(BLU"[#]"RESET "Enter the problem:");
+    scanf("\n%[^\n]s",line);
+    fputs(line,fq);
+    for(int i=0;i<2;i++)
+    {
+        fputc('\n',fq);
+        printf(BLU"[#]"RESET "Enter choice%d:\n",i+1);
+        scanf("\n%[^\n]s",line);
+        fputs(line,fq);        fputc('\n',fq);
+        puts(BLU"[#]"RESET "Enter effect on people:");
+        scanf("\n%[^\n]s",line);
+        fputs(line,fq);        fputc('\n',fq);
+        puts(BLU"[#]"RESET "Enter effect on court:");
+        scanf("\n%[^\n]s",line);
+        fputs(line,fq);        fputc('\n',fq);
+        puts(BLU"[#]"RESET "Enter effect on treasury:");
+        scanf("\n%[^\n]s",line);
+        fputs(line,fq);        
+    }
+    fclose(fq);
+    puts(BLU"####################################################"RESET);
+    puts(YEL"[###]"RESET"Problem Made!"YEL"[###]"RESET);
+}
